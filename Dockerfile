@@ -44,18 +44,18 @@ RUN \
      ${RDECK_BASE}/libext
 COPY files/realm.properties ${RDECK_BASE}/server/config/
 COPY files/project.properties ${PROJECT_BASE}/etc/
-ADD "${RDECK_WAR_URL}/rundeck-${RDECK_VERSION}.war" "${RDECK_BASE}/bin/rundeck.war"
+ADD "${RDECK_WAR_URL}/rundeck-${RDECK_VERSION}.war" "/rundeck.war"
 
 ## Install Rundeck Ansible plugin
-ENV RDECK_ANSIBLE_VERSION=2.5.0 \
-    RDECK_ANSIBLE_URL=https://github.com/Batix/rundeck-ansible-plugin/releases/download/
-ADD "${RDECK_ANSIBLE_URL}/${RDECK_ANSIBLE_VERSION}/ansible-plugin-${RDECK_ANSIBLE_VERSION}.jar" "${RDECK_BASE}/libext/ansible-plugin-${RDECK_ANSIBLE_VERSION}.jar"
+# ENV RDECK_ANSIBLE_VERSION=2.5.0 \
+#    RDECK_ANSIBLE_URL=https://github.com/Batix/rundeck-ansible-plugin/releases/download/
+# ADD "${RDECK_ANSIBLE_URL}/${RDECK_ANSIBLE_VERSION}/ansible-plugin-${RDECK_ANSIBLE_VERSION}.jar" "${RDECK_BASE}/libext/ansible-plugin-${RDECK_ANSIBLE_VERSION}.jar"
 
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 # VOLUME $HOME/rundeck
-WORKDIR $HOME/rundeck
+WORKDIR ${RDECK_BASE}
 
 EXPOSE 4440
 # VOLUME /var/lib/cassandra

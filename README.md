@@ -17,14 +17,14 @@ Run
 docker run -d -t \
   --name rundeck \
   -p 3306:3306 \
-  -v /host/path/mysql:/var/lib/mysql \
-  iape/mysql
+  -v /host/path/rundeck:/opt/rundeck \
+  anmcarrow/rundeck-ansible
 ```
 
 Author
 ---
 Andrey Makarov
 
-Copyrights
+License
 ---
-© Iskratel Group, all rigths reserved.
+MIT
