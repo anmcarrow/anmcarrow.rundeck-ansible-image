@@ -57,6 +57,7 @@ ADD "${RDECK_WAR_URL}/rundeck-${RDECK_VERSION}.war" "/rundeck.war"
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 4440
+HEALTHCHECK --interval=5s --timeout=10s --retries=3 CMD wget -q --spider 127.0.0.1:4440 || exit 1
 WORKDIR ${RDECK_BASE}
 ENTRYPOINT ["/docker-entrypoint.sh"]
 # CMD ["bash"]
