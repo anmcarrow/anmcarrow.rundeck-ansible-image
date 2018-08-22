@@ -15,13 +15,9 @@ ENV ANSIBLE_HOST_KEY_CHECKING=false \
 ## General package configuration
 RUN apt-get -y update && \
     apt-get -yy --no-install-recommends install \
-        sudo \
-        software-properties-common \
-        debconf-utils \
         gnupg2 \
         uuid-runtime \
         openssh-client \
-        apt-transport-https \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
