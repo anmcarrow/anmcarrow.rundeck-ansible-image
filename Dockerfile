@@ -1,5 +1,4 @@
 # vim:set ft=dockerfile:
-# FROM debian:stretch-slim
 FROM anmcarrow/ansible
 
 ENV ANSIBLE_HOST_KEY_CHECKING=false \
@@ -12,38 +11,41 @@ ENV ANSIBLE_HOST_KEY_CHECKING=false \
     RDECK_PORT=4440 \
     RDECK_VERSION=3.0.1-20180803 \
     RDECK_WAR_URL=https://dl.bintray.com/rundeck/rundeck-maven
-    # ENV RDECK_HOST=localhost \
 
 ## General package configuration
 RUN apt-get -y update && \
-    apt-get -y install \
+    apt-get -yy --no-install-recommends install \
         sudo \
         software-properties-common \
         debconf-utils \
         gnupg2 \
         uuid-runtime \
         openssh-client \
-        apt-transport-https
+        apt-transport-https \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 ## Install Oracle JVM
 RUN \
      apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 \
-  && mkdir -p /usr/share/man/man1 \
-  && echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections \
-  && add-apt-repository -y ppa:webupd8team/java \
-  && apt-get update \
-  && apt-get install -y oracle-java8-installer
+   && mkdir -p /usr/share/man/man1 \
+   && echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections \
+   && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" > /etc/apt/sources.list.d/java8.list \
+   && apt-get update \
+   && apt-get -yy --no-install-recommends install oracle-java8-installer oracle-java8-set-default \
+   && apt-get clean \
+   && rm -rf /var/lib/apt/lists/* \
+   && rm -rf /var/cache/oracle-jdk8-installer
 
 ## Install Rundeck
-
 RUN \
      mkdir -p \
      ${PROJECT_BASE}/bin \
      ${PROJECT_BASE}/acls \
      ${PROJECT_BASE}/etc \
      ${RDECK_BASE}/libext
-COPY files/realm.properties ${RDECK_BASE}/server/config/
-COPY files/project.properties ${PROJECT_BASE}/etc/
+ADD files/realm.properties ${RDECK_BASE}/server/config/
+ADD files/project.properties ${PROJECT_BASE}/etc/
 ADD "${RDECK_WAR_URL}/rundeck-${RDECK_VERSION}.war" "/rundeck.war"
 
 ## Install Rundeck Ansible plugin
@@ -53,14 +55,8 @@ ADD "${RDECK_WAR_URL}/rundeck-${RDECK_VERSION}.war" "/rundeck.war"
 
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-# VOLUME $HOME/rundeck
-WORKDIR ${RDECK_BASE}
 
 EXPOSE 4440
-# VOLUME /var/lib/cassandra
-
-WORKDIR "/"
+WORKDIR ${RDECK_BASE}
 ENTRYPOINT ["/docker-entrypoint.sh"]
-#CMD ["cassandra", "-f"]
 # CMD ["bash"]

@@ -3,6 +3,6 @@
 PROJECT_NAME="anmcarrow"
 IMAGE_NAME="rundeck-ansible"
 
-time docker build -t ${PROJECT_NAME}/${IMAGE_NAME} .
-
+time docker build -t ${PROJECT_NAME}/${IMAGE_NAME} . && \
+docker push ${PROJECT_NAME}/${IMAGE_NAME}
 exit 0
